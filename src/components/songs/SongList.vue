@@ -52,14 +52,25 @@
 
 <script setup>
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useSongsStore } from '@/stores/songs'
+import { useAuthStore } from '@/stores/auth'
 
 const emit = defineEmits(['seleccionar'])
 
 const songsStore = useSongsStore()
+const authStore = useAuthStore()
+const { userId } = storeToRefs(authStore)
 
-const canciones = computed(() => songsStore.canciones)
-const totalCanciones = computed(() => songsStore.totalCanciones)
+// filtramos canciones según el usuario actual
+const canciones = computed(() =>
+  songsStore.canciones.filter(
+    (c) => c.userId === userId.value
+  )
+)
+
+// tmb de usuario actual
+const totalCanciones = computed(() => canciones.value.length)
 
 function eliminar(id) {
   if (confirm('¿Seguro que querés borrar esta canción?')) {

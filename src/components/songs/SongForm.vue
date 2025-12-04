@@ -178,9 +178,13 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useSongsStore } from '@/stores/songs'
+import { useAuthStore } from '@/stores/auth'
 
 const songsStore = useSongsStore()
+const authStore = useAuthStore()
+const { userId } = storeToRefs(authStore)
 
 const titulo = ref('')
 const estado = ref('starting')
@@ -222,7 +226,15 @@ function manejarEnvio() {
     return
   }
 
+  if (!userId.value) {
+    // por las dudas:
+    errores.titulo = 'Necesitás iniciar sesión para guardar canciones.'
+    return
+  }
+
   songsStore.agregarCancion({
+    userId: userId.value, // asociamos la canción con el usuario
+
     titulo: titulo.value.trim(),
     estado: estado.value,
     tipo: tipo.value,

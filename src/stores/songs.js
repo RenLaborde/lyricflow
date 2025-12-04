@@ -30,6 +30,7 @@ function guardarEnStorage(canciones) {
 export const useSongsStore = defineStore('songs', {
   state: () => ({
     canciones: cargarDesdeStorage(),
+    selectedId: null, 
   }),
 
   getters: {
@@ -38,11 +39,17 @@ export const useSongsStore = defineStore('songs', {
 
   actions: {
     agregarCancion(datos) {
+      const ahora = new Date().toISOString()
+
       const nueva = {
         id: generarId(),
+
+        // a qué usuario pertenece
+        userId: datos.userId ?? null,
+
         titulo: datos.titulo,
-        estado: datos.estado,         // starting | in_progress | done
-        tipo: datos.tipo,             // single | ep | album | show
+        estado: datos.estado, // starting | in_progress | done
+        tipo: datos.tipo, // single | ep | album | show
         notas: datos.notas || '',
 
         // más datos musicales opcionales:
@@ -54,15 +61,20 @@ export const useSongsStore = defineStore('songs', {
         enlaceReferencia: datos.enlaceReferencia || '',
         enlaceImagen: datos.enlaceImagen || '',
 
-        creadaEn: new Date().toISOString(),
+        creadaEn: ahora,
+        actualizadaEn: ahora,
       }
 
       this.canciones.unshift(nueva)
+      this.selectedId = nueva.id
       guardarEnStorage(this.canciones)
     },
 
     eliminarCancion(id) {
       this.canciones = this.canciones.filter((c) => c.id !== id)
+      if (this.selectedId === id) {
+        this.selectedId = null
+      }
       guardarEnStorage(this.canciones)
     },
 
@@ -73,6 +85,7 @@ export const useSongsStore = defineStore('songs', {
       this.canciones[indice] = {
         ...this.canciones[indice],
         ...cambios,
+        actualizadaEn: new Date().toISOString(),
       }
 
       guardarEnStorage(this.canciones)
