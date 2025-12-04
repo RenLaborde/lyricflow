@@ -50,6 +50,113 @@
         </select>
       </div>
 
+      <!-- Tonalidad -->
+      <div class="campo">
+        <label for="tonalidad" class="campo-label">Tonalidad</label>
+        <select
+          id="tonalidad"
+          v-model="tonalidad"
+          class="campo-select"
+        >
+          <option value="">Seleccionar</option>
+          <option value="C mayor">C mayor</option>
+          <option value="C menor">C menor</option>
+          <option value="D mayor">D mayor</option>
+          <option value="D menor">D menor</option>
+          <option value="E mayor">E mayor</option>
+          <option value="E menor">E menor</option>
+          <option value="F mayor">F mayor</option>
+          <option value="F menor">F menor</option>
+          <option value="G mayor">G mayor</option>
+          <option value="G menor">G menor</option>
+          <option value="A mayor">A mayor</option>
+          <option value="A menor">A menor</option>
+          <option value="B mayor">B mayor</option>
+          <option value="B menor">B menor</option>
+        </select>
+      </div>
+
+      <!-- BPM + Progresión -->
+      <div class="campo fila-doble">
+        <div class="columna">
+          <label for="bpm" class="campo-label">BPM</label>
+          <input
+            id="bpm"
+            v-model.number="bpm"
+            type="number"
+            min="40"
+            max="260"
+            class="campo-input"
+            placeholder="Ej: 120"
+          />
+        </div>
+
+        <div class="columna">
+          <label for="progresion" class="campo-label">
+            Progresión de acordes
+          </label>
+          <input
+            id="progresion"
+            v-model="progresion"
+            type="text"
+            class="campo-input"
+            placeholder="Ej: Am – F – C – G"
+          />
+        </div>
+      </div>
+
+      <!-- Letra -->
+      <div class="campo">
+        <label for="letra" class="campo-label">Letra</label>
+        <textarea
+          id="letra"
+          v-model="letra"
+          rows="4"
+          class="campo-textarea"
+          placeholder="Escribí acá la letra completa o un primer borrador..."
+        ></textarea>
+      </div>
+
+      <!-- Enlaces -->
+      <div class="campo">
+        <label for="enlaceAudio" class="campo-label">
+          Enlace a audio / demo
+        </label>
+        <input
+          id="enlaceAudio"
+          v-model="enlaceAudio"
+          type="url"
+          class="campo-input"
+          placeholder="Ej: link de Drive, SoundCloud, etc."
+        />
+      </div>
+
+      <div class="campo">
+        <label for="enlaceReferencia" class="campo-label">
+          Enlace de referencia
+        </label>
+        <input
+          id="enlaceReferencia"
+          v-model="enlaceReferencia"
+          type="url"
+          class="campo-input"
+          placeholder="Ej: tema de referencia en YouTube / Spotify"
+        />
+      </div>
+
+      <div class="campo">
+        <label for="enlaceImagen" class="campo-label">
+          Imagen / portada (URL)
+        </label>
+        <input
+          id="enlaceImagen"
+          v-model="enlaceImagen"
+          type="url"
+          class="campo-input"
+          placeholder="Moodboard, portada, etc."
+        />
+      </div>
+
       <!-- Notas -->
       <div class="campo">
         <label for="notas" class="campo-label">Notas</label>
@@ -58,7 +165,7 @@
           v-model="notas"
           rows="3"
           class="campo-textarea"
-          placeholder="Referencias, atmósfera, ideas de letra, tono, etc."
+          placeholder="Notas sobre la producción, sensaciones, cosas a probar..."
         ></textarea>
       </div>
 
@@ -80,6 +187,14 @@ const estado = ref('starting')
 const tipo = ref('single')
 const notas = ref('')
 
+const letra = ref('')
+const tonalidad = ref('')
+const bpm = ref(null)
+const progresion = ref('')
+const enlaceAudio = ref('')
+const enlaceReferencia = ref('')
+const enlaceImagen = ref('')
+
 const errores = reactive({
   titulo: '',
 })
@@ -89,6 +204,13 @@ function limpiarFormulario() {
   estado.value = 'starting'
   tipo.value = 'single'
   notas.value = ''
+  letra.value = ''
+  tonalidad.value = ''
+  bpm.value = null
+  progresion.value = ''
+  enlaceAudio.value = ''
+  enlaceReferencia.value = ''
+  enlaceImagen.value = ''
   errores.titulo = ''
 }
 
@@ -105,6 +227,13 @@ function manejarEnvio() {
     estado: estado.value,
     tipo: tipo.value,
     notas: notas.value.trim(),
+    letra: letra.value.trim(),
+    tonalidad: tonalidad.value,
+    bpm: bpm.value || null,
+    progresion: progresion.value.trim(),
+    enlaceAudio: enlaceAudio.value.trim(),
+    enlaceReferencia: enlaceReferencia.value.trim(),
+    enlaceImagen: enlaceImagen.value.trim(),
   })
 
   limpiarFormulario()
@@ -132,8 +261,6 @@ function manejarEnvio() {
   color: #9ca3af;
   margin-bottom: 1.4rem;
 }
-
-/* Campos */
 
 .campo {
   margin-bottom: 1rem;
@@ -178,7 +305,21 @@ function manejarEnvio() {
   color: #f97373;
 }
 
-/* Botones */
+.fila-doble {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 600px) {
+  .fila-doble {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  }
+}
+
+.columna {
+  width: 100%;
+}
 
 .btn-primario {
   margin-top: 0.5rem;

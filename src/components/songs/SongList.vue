@@ -15,7 +15,7 @@
         :key="cancion.id"
         class="item"
       >
-        <div class="item-contenido">
+        <div class="item-contenido" @click="seleccionar(cancion.id)">
           <h3 class="item-titulo">{{ cancion.titulo }}</h3>
 
           <div class="chips">
@@ -24,6 +24,12 @@
             </span>
             <span class="chip chip-tipo">
               {{ etiquetaTipo(cancion.tipo) }}
+            </span>
+            <span v-if="cancion.tonalidad" class="chip chip-extra">
+              {{ cancion.tonalidad }}
+            </span>
+            <span v-if="cancion.bpm" class="chip chip-extra">
+              {{ cancion.bpm }} BPM
             </span>
           </div>
 
@@ -36,7 +42,7 @@
           </p>
         </div>
 
-        <button class="btn-eliminar" @click="eliminar(cancion.id)">
+        <button class="btn-eliminar" @click.stop="eliminar(cancion.id)">
           ×
         </button>
       </li>
@@ -48,6 +54,8 @@
 import { computed } from 'vue'
 import { useSongsStore } from '@/stores/songs'
 
+const emit = defineEmits(['seleccionar'])
+
 const songsStore = useSongsStore()
 
 const canciones = computed(() => songsStore.canciones)
@@ -57,6 +65,10 @@ function eliminar(id) {
   if (confirm('¿Seguro que querés borrar esta canción?')) {
     songsStore.eliminarCancion(id)
   }
+}
+
+function seleccionar(id) {
+  emit('seleccionar', id)
 }
 
 function etiquetaEstado(estado) {
@@ -102,73 +114,87 @@ function formatearFecha(iso) {
   background: #020617;
   border-radius: 24px;
   border: 1px solid #1f2937;
-  padding: 1.8rem 1.6rem;
+  padding: 1.6rem 1.5rem 1.4rem;
   color: #e5e7eb;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
-  max-height: 600px;
-  overflow-y: auto;
 }
 
 .encabezado {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.8rem;
 }
 
 .panel-titulo {
   font-size: 1.4rem;
+  margin: 0;
+  color: #f9fafb;
 }
 
 .contador {
-  font-size: 0.8rem;
-  padding: 0.25rem 0.7rem;
+  font-size: 0.85rem;
+  color: #9ca3af;
+  background: #020617;
   border-radius: 999px;
-  background: rgba(148, 163, 184, 0.15);
-  color: #e5e7eb;
+  padding: 0.15rem 0.7rem;
+  border: 1px solid #374151;
 }
 
 .texto-vacio {
-  margin-top: 0.8rem;
+  margin-top: 0.5rem;
   font-size: 0.9rem;
   color: #9ca3af;
 }
 
 .lista {
   list-style: none;
+  margin: 0.5rem 0 0;
   padding: 0;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
 }
 
 .item {
   display: flex;
   justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(31, 41, 55, 0.7);
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 0.7rem 0.6rem;
+  border-radius: 12px;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
-.item:last-child {
-  border-bottom: none;
+.item:hover {
+  background: #020617;
+  transform: translateY(-1px);
+}
+
+.item-contenido {
+  flex: 1;
+  cursor: pointer;
 }
 
 .item-titulo {
-  margin: 0 0 0.2rem;
+  margin: 0;
   font-size: 1rem;
+  color: #f9fafb;
 }
 
 .chips {
+  margin-top: 0.3rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  margin-bottom: 0.25rem;
 }
 
 .chip {
   font-size: 0.7rem;
-  padding: 0.18rem 0.6rem;
+  padding: 0.12rem 0.5rem;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid #374151;
+  color: #e5e7eb;
 }
 
 .chip-estado-starting {
@@ -187,28 +213,35 @@ function formatearFecha(iso) {
 }
 
 .chip-tipo {
-  border-color: #ca25e8;
-  color: #f9a8ff;
+  border-color: #6366f1;
+  color: #c7d2fe;
+}
+
+.chip-extra {
+  border-color: #22d3ee;
+  color: #a5f3fc;
 }
 
 .item-notas {
-  margin: 0.1rem 0;
+  margin: 0.4rem 0 0;
   font-size: 0.85rem;
-  color: #cbd5ff;
+  color: #e5e7eb;
 }
 
 .item-meta {
+  margin: 0.15rem 0 0;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: #9ca3af;
 }
 
 .btn-eliminar {
-  align-self: flex-start;
   border: none;
   background: transparent;
-  color: #64748b;
-  font-size: 1.2rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+  line-height: 1;
   cursor: pointer;
+  padding: 0.1rem 0.3rem;
 }
 .btn-eliminar:hover {
   color: #f97373;
